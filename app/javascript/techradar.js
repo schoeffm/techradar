@@ -472,10 +472,11 @@
             }
 
             function drawQuadrantLegend(group, quadrant, quadrantIndex, maxArcIndex, arcDistanceInPixel) {
+                var transpile = (quadrant.upperAngle - quadrant.lowerAngle) / 90;
                 var text = group.append('text')
                     .attr("class", "quadrantLegend")
                     .attr("dy", +20) //
-                    .attr("dx", (maxArcIndex * arcDistanceInPixel));
+                    .attr("dx", transpile*(maxArcIndex * arcDistanceInPixel));
 
                 text.append("textPath")
                     .text(quadrant.title)
