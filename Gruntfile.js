@@ -27,7 +27,7 @@ module.exports = function (grunt) {
         uglify: {
             view: {
                 src: ['<%= destination %>/<%= pkg.name %>.combined.js'],
-                dest: '<%= destination %>/<%= pkg.name %>.view.min.js'
+                dest: '<%= destination %>/<%= pkg.name %>.min.js'
             },
             options: {
                 'mangle': {},
