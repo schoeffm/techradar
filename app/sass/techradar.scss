@@ -44,7 +44,6 @@ $break_xl: 1280px;
   .spot {
     stroke: white;
     stroke-width: 1;
-    fill: #6B8E23;
     
     &.hasMoved, &.historySpot {
       fill: $color_light_orange;
@@ -156,12 +155,12 @@ $break_xl: 1280px;
     margin-left: 1em;
     margin-bottom: 0.5em;
     vertical-align: middle;
-    -webkit-border-radius: 28;
-    -moz-border-radius: 28;
+    -webkit-border-radius: 28px;
+    -moz-border-radius: 28px;
     border-radius: 28px;
     color: rgb(51, 51, 51);
     font-size: 11px;
-    padding: 0px 5px 2px 5px;
+    padding: 0 5px 2px 5px;
     border: solid #9c9c9c 1px;
     text-decoration: none;
   }
@@ -175,7 +174,7 @@ $break_xl: 1280px;
 }
 
 @mixin help-text() {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Arial', sans-serif;
   font-weight: 300;
   font-size: 1em;
   cursor: pointer;
@@ -200,7 +199,7 @@ $break_xl: 1280px;
 }
 
 #simplemodal-container {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Arial', sans-serif;
   font-weight: 300;
   font-size: 1em;
   background-color: white;

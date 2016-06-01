@@ -8,6 +8,9 @@
     exports.TechRadar = TechRadar;
 
     TechRadar.prototype = {
+        clickRadarItem:function(itemId){
+            $('#'+itemId+'.itemText div.label').click();
+        },
         create: function () {
             
             /* these few configurations are the bare necessary stuff */
@@ -20,6 +23,7 @@
             var height = (radius * _.size(this.radar.arcs)) * 2 + (offset * 2);
             var center = {x: width / 2, y: height / 2};
 
+            //noinspection HtmlUnknownTarget
             var linkTemplate = _.template("<a target='_blank' href='${url}'>${title}</a>");
 
             var canvas = d3.select("#radar") //
@@ -55,7 +59,7 @@
                     });
 
                 // creates all spots
-                createRadarSpots(enterElement);
+                createRadarSpots(enterElement, quadrant);
 
                 // write a head-line per quadrant
                 createListHeadline(quadrant, (quadrantIndex < 2) ? 0 : 1);
@@ -121,8 +125,18 @@
                     .on('mouseover', function () { highlightHelp(); })
                     .on('click', function() { toggleHelp(); });
             }
-            
-            function createRadarSpots(enterElement) {
+
+            function getPlacementDescription(spot, placement){
+                var placementDescription = placement.description;
+                if(spot.url){
+                    placementDescription = placement.description
+                        .replace(spot.title, linkTemplate({'url': spot.url, 'title': spot.title}));
+                }
+                return placementDescription;
+            }
+
+            function createRadarSpots(enterElement, quadrant) {
+
                 enterElement.append("circle")
                     .attr("id", function (d) { return asId(d.title); })
                     .attr("cx", function (d) {
@@ -137,7 +151,7 @@
                     })
                     .attr("r", 10)
                     .attr("class", function (d) {
-                        return (hasSpotMoved(d)) ? "spot hasMoved" : "spot";
+                        return ((hasSpotMoved(d)) ? "spot hasMoved" : "spot")+" "+quadrant.cssClass;
                     })
                     .on('mouseover', function (d) {
                         highlightSpot(d);
@@ -255,11 +269,10 @@
                         var since = new Date(placement.since);
                         historyBox.append('div')
                             .attr('class', 'date')
-                            .text(since.toLocaleString('de-DE', {year: 'numeric', month: 'long'}));
+                            .text(since.toLocaleString('en-US', {year: 'numeric', month: 'long'}));
                         historyBox.append('div')
                             .attr('class', 'text')
-                            .html(placement.description
-                                .replace(spot.title, linkTemplate({'url': spot.url, 'title': spot.title})));
+                            .html(getPlacementDescription(spot, placement));
                     });
 
                     return historyBox;
@@ -272,8 +285,7 @@
 
                     // var linkTemplate = _.template("<a target='_blank' href='${url}'>${title}</a>");
                     descriptionBox.append('div')
-                        .html(currentPlacementOf(spot)
-                            .description.replace(spot.title, linkTemplate({'url': spot.url, 'title': spot.title})));
+                        .html(getPlacementDescription(spot, currentPlacementOf(spot)));
 
                     return descriptionBox;
                 }
@@ -443,7 +455,7 @@
             }
 
             function drawQuadrantArc(group, radius, arcIndex, quadrantIndex, quadrant) {
-                var background = quadrant.color || "none";
+                var cssClass = quadrant.cssClass || "none";
                 var start = quadrant.lowerAngle * (Math.PI / 180);
                 var end = quadrant.upperAngle * (Math.PI / 180);
                 var inner = radius * arcIndex;
@@ -464,7 +476,7 @@
                 group.append("path") //
                     .attr("id", quadrantIndex + "_" + arcIndex)
                     .attr("d", arc) //
-                    .attr("fill", background) //
+                    .attr("class", cssClass) //
                     .attr("fill-opacity", 1 / (outer / 100)) //
                     .attr("stroke", "grey") //
                     .attr("stroke-opacity", 0.4) //
@@ -506,6 +518,7 @@
                     .attr("stroke-opacity", 1) //
                     .attr("stroke-width", 1);
             }
+
 
             function hasSpotMoved(spot) {
                 var result = false;
