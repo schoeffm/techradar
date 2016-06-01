@@ -2,22 +2,26 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         // order matters (concatenation respects order and that order is relevant during parsing)
-        scss_sources: ['app/sass/techradar.scss'],
+        scss_sources: ['app/sass/techradar.scss', 'app/sass/quadrants.scss'],
         js_view_sources: ['app/javascript/init.js', 'app/javascript/techradar.js'],
+        images_source_dir: 'app/images',
         tests: ['test/javascript/**/*js'],
         css_libs: [],
         view_libs: [
+            'bower_components/jquery/dist/jquery.min.js',
+            'bower_components/jquery-color/jquery.color.js',
             'bower_components/d3/d3.min.js',
             'bower_components/lodash/lodash.min.js',
             'bower_components/underscore/underscore-min.js',
             'bower_components/ericmmartin.simplemodal/src/jquery.simplemodal.js'
         ],
-        destination: 'dist/js',
+        js_destination: 'dist/js',
         css_destination: 'dist/css',
+        img_destination: 'dist/images',
         jshint: {
             task: {
                 src: ['<%= js_view_sources %>'],
-                dest: '<%= destination %>'
+                dest: '<%= js_destination %>'
             },
             options: {
                 jshintrc: '.jshintrc',
@@ -26,8 +30,8 @@ module.exports = function (grunt) {
         },
         uglify: {
             view: {
-                src: ['<%= destination %>/<%= pkg.name %>.combined.js'],
-                dest: '<%= destination %>/<%= pkg.name %>.min.js'
+                src: ['<%= js_destination %>/<%= pkg.name %>.combined.js'],
+                dest: '<%= js_destination %>/<%= pkg.name %>.min.js'
             },
             options: {
                 'mangle': {},
@@ -54,7 +58,7 @@ module.exports = function (grunt) {
             },
             view: {
                 src: ['<%= view_libs %>', '<%= js_view_sources %>'],
-                dest: '<%= destination %>/<%= pkg.name %>.combined.js'
+                dest: '<%= js_destination %>/<%= pkg.name %>.combined.js'
             },
             options: {
                 'separator': grunt.util.linefeed,
@@ -68,25 +72,43 @@ module.exports = function (grunt) {
             }
         },
         watch: {
-            task: {
-                files: ['<%= js_view_sources %>', '<%= tests %>', '<%= scss_sources %>'],
-                tasks: ['sass', 'jshint', 'mocha_phantomjs', 'concat']
-
-            },
+            all: {//This is default task
+                files: ['<%= js_view_sources %>', '<%= tests %>', '<%= scss_sources %>', 'radars/*.js'],
+                tasks: ['sass', 'jshint', 'mocha_phantomjs', 'concat'],
             options: {
                 'spawn': true,
                 'interrupt': false,
                 'debounceDelay': 500,
-                'interval': 100,
+                'interval': 50,
                 'event': 'all',
                 'reload': false,
                 'forever': true,
                 'dateFormat': null,
                 'atBegin': false,
-                'livereload': false,
+                'livereload': true,
                 'cwd': process.cwd(),
                 'livereloadOnError': true
             }
+        },
+            radar: {//Can be used when only radar file changes to speed up reloads
+                files: ['radars/*.js'],
+                options: {
+                    'spawn': true,
+                    'interrupt': false,
+                    'debounceDelay': 500,
+                    'interval': 50,
+                    'event': 'all',
+                    'reload': false,
+                    'forever': true,
+                    'dateFormat': null,
+                    'atBegin': false,
+                    'livereload': true,
+                    'cwd': process.cwd(),
+                    'livereloadOnError': true
+                }
+            }
+
+
         },
         sass: {
             view: {
@@ -111,6 +133,16 @@ module.exports = function (grunt) {
                 'update': false
             }
         },
+        //Copy images
+        copy: {
+            files: {
+                expand: true,
+                dot: true,
+                cwd: '<%= images_source_dir %>',
+                dest: '<%= img_destination %>',
+                src: '**/*'
+            }
+        },
         mocha_phantomjs: {
             all: ['src/test/javascript/**/*.html']
         },
@@ -132,9 +164,12 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-mocha');
     grunt.loadNpmTasks('grunt-mocha-phantomjs');
 
-    grunt.registerTask('dev', ['sass', 'jshint', 'concat', 'watch']);
-    grunt.registerTask('default', ['sass', 'jshint', 'mocha_phantomjs', 'concat', 'uglify']);
+    grunt.registerTask('watchRadar', ['watch:radar']);
+    grunt.registerTask('watchAll', ['watch:all']);
+    grunt.registerTask('dev', ['sass', 'jshint', 'concat', 'watch', 'copy']);
+    grunt.registerTask('default', ['sass', 'jshint', 'mocha_phantomjs', 'concat', 'uglify', 'copy']);
 };

@@ -1,16 +1,21 @@
 var de;
 if (! de) { de = {}; }
 if (! de.bender) { de.bender = {}; }
+if (! de.bender.radar ) { de.bender.radar = {}; }
 
+//
 // like on-document-ready but for confluence-pages
 $(document).ready(function () {
     de.bender.prepareSage();
-    new TechRadar(_.first(radar)).create();
+    radar = new TechRadar(_.first(radar));
+    radar.create();
+    de.bender.radar =radar;
 });
 
 
 de.bender.radars = []; // init with an empty array
 
+//noinspection JSJQueryEfficiency
 de.bender.prepareSage = function() {
     if ($('help').length === 0) { $('#main').append('<div id="help">'); }
     if ($('radar').length === 0) { $("#main").append('<div id="radar">'); }
@@ -33,6 +38,7 @@ de.bender.showRadar = function(indexOfRadarToBeShown) {
     
     document.title = de.bender.radars[indexOfRadarToBeShown].title;
     $('#title-text').text(de.bender.radars[indexOfRadarToBeShown].title);
-    
-    new TechRadar(de.bender.radars[indexOfRadarToBeShown]).create();
+    radar = new TechRadar(de.bender.radars[indexOfRadarToBeShown]);
+    radar.create();
+    de.bender.radar =radar;
 };
