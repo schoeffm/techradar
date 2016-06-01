@@ -30,6 +30,7 @@
         "grunt-contrib-concat": "*",
         "grunt-contrib-jshint": "*",
         "grunt-contrib-sass": "*",
+        "grunt-contrib-copy": "*",
         "grunt-contrib-uglify": "*",
         "grunt-contrib-watch": "*",
         "grunt-mocha": "^0.4.12",
