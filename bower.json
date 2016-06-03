@@ -22,6 +22,7 @@
         "lodash": "~3.5.0",
         "d3": "~3.5.5",
         "jquery": "~2.1.3",
+        "jquery-color": "~2.1.2",
         "ericmmartin.simplemodal": "~1.4.5"
     },
     "devDependencies": {}

@@ -33,31 +33,32 @@ var radar = [
         "quadrants": [
             {
                 "id": 1,
-                "title": "Tools",
-                "upperAngle": 90,
-                "lowerAngle": 0,
-                "color": "#A8B4C3"
+                "title": "Techniques",
+                "upperAngle": 180,
+                "lowerAngle": 90,
+                "cssClass": "techniques"
             },
             {
                 "id": 2,
                 "title": "Platforms",
                 "upperAngle": 270,
                 "lowerAngle": 180,
-                "color": "#EBB35F"
+                "cssClass": "platforms"
             },
             {
                 "id": 3,
-                "title": "Languages and Frameworks",
-                "upperAngle": 360,
-                "lowerAngle": 270,
-                "color": "#CFBCC4"
+                "title": "Tools",
+                "upperAngle": 90,
+                "lowerAngle": 0,
+                "cssClass": "tools"
             },
             {
                 "id": 4,
-                "title": "Techniques",
-                "upperAngle": 180,
-                "lowerAngle": 90,
-                "color": "#CCC18B"
+                "title": "Languages and Frameworks",
+                "upperAngle": 360,
+                "lowerAngle": 270,
+                "cssClass": "languages"
+
             }
         ],
         "spots": [
@@ -71,8 +72,8 @@ var radar = [
                         "description": "Yeoman helps to kickstart new projects, prescribing best practices and tools to help you stay productive. To do so, Yeoman provides a generator ecosystem. A generator is basically a plugin that can be run with the `yo` command to scaffold complete projects or useful parts. The offered workflow is a robust and opinionated client-side stack, comprising tools and frameworks that can help developers quickly build beautiful web applications. We take care of providing everything needed to get started without any of the normal headaches associated with a manual setup.",
                         "since": 1426464000000,
                         "coordinates": {
-                            "angle": 60,
-                            "radius": 200
+                            "angle": 90,
+                            "radius": 180
                         }
                     },
                     {
@@ -80,8 +81,8 @@ var radar = [
                         "description": "Yeoman helps to kickstart new projects, prescribing best practices and tools to help you stay productive. To do so, Yeoman provides a generator ecosystem. A generator is basically a plugin that can be run with the `yo` command to scaffold complete projects or useful parts. The offered workflow is a robust and opinionated client-side stack, comprising tools and frameworks that can help developers quickly build beautiful web applications. We take care of providing everything needed to get started without any of the normal headaches associated with a manual setup.",
                         "since": 1441978094000,
                         "coordinates": {
-                            "angle": 60,
-                            "radius": 200
+                            "angle": 0,
+                            "radius": 90
                         }
                     }
                 ]
@@ -240,7 +241,7 @@ var radar = [
                         "since": 1441978094000,
                         "coordinates": {
                             "angle": 20,
-                            "radius": 112
+                            "radius": 10
                         }
                     }
                 ]
@@ -704,4 +705,4 @@ var radar = [
             }
         ]
     }
-]
+];

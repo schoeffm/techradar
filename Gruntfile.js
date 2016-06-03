@@ -1,10 +1,15 @@
 module.exports = function (grunt) {
+
+    var radarName = grunt.option('radar') || 'demo';
+    var distDir = 'radars/'+radarName+'/dist';
+
+    console.log("\nBuilding site for radar: "+radarName+"\n");
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        // order matters (concatenation respects order and that order is relevant during parsing)
-        scss_sources: ['app/sass/techradar.scss', 'app/sass/quadrants.scss'],
-        js_view_sources: ['app/javascript/init.js', 'app/javascript/techradar.js'],
-        images_source_dir: 'app/images',
+        scss_sources: ['app/sass/techradar.scss', 'radars/'+radarName+'/sass/radar.scss' ],
+        js_view_sources: ['app/javascript/init.js', 'app/javascript/techradar.js' , 'radars/'+radarName+'/javascript/*.js'],
+        image_sources: ['app/images/*', 'radars/'+radarName+'/images/*'],
         tests: ['test/javascript/**/*js'],
         css_libs: [],
         view_libs: [
@@ -15,9 +20,9 @@ module.exports = function (grunt) {
             'bower_components/underscore/underscore-min.js',
             'bower_components/ericmmartin.simplemodal/src/jquery.simplemodal.js'
         ],
-        js_destination: 'dist/js',
-        css_destination: 'dist/css',
-        img_destination: 'dist/images',
+        js_destination: distDir+'/js',
+        css_destination: distDir+'/css',
+        img_destination: distDir+'/images/',
         jshint: {
             task: {
                 src: ['<%= js_view_sources %>'],
@@ -53,7 +58,7 @@ module.exports = function (grunt) {
         },
         concat: {
             css_view: {
-                src: ['<%= css_libs %>', '<%= css_destination %>/<%= pkg.name %>.view.css'],
+                src: ['<%= css_libs %>', '<%= css_destination %>/*.css'],
                 dest: '<%= css_destination %>/<%= pkg.name %>.view.combined.css'
             },
             view: {
@@ -90,6 +95,24 @@ module.exports = function (grunt) {
                 'livereloadOnError': true
             }
         },
+            js: {//For javascript changes
+                files: ['<%= js_view_sources %>', 'radars/*.js'],
+                tasks: [ 'jshint', 'concat'],
+                options: {
+                    'spawn': true,
+                    'interrupt': false,
+                    'debounceDelay': 500,
+                    'interval': 50,
+                    'event': 'all',
+                    'reload': false,
+                    'forever': true,
+                    'dateFormat': null,
+                    'atBegin': false,
+                    'livereload': true,
+                    'cwd': process.cwd(),
+                    'livereloadOnError': true
+                }
+            },
             radar: {//Can be used when only radar file changes to speed up reloads
                 files: ['radars/*.js'],
                 options: {
@@ -112,8 +135,11 @@ module.exports = function (grunt) {
         },
         sass: {
             view: {
-                src: ['app/sass/techradar.scss'],
-                dest: '<%= css_destination %>/<%= pkg.name %>.view.css'
+                src: '<%= scss_sources %>',
+                expand: true,
+                flatten: true,
+                ext: '.css',
+                dest: '<%= css_destination %>'
             },
             options: {
                 'trace': false,
@@ -136,11 +162,10 @@ module.exports = function (grunt) {
         //Copy images
         copy: {
             files: {
+                flatten: true,
                 expand: true,
-                dot: true,
-                cwd: '<%= images_source_dir %>',
                 dest: '<%= img_destination %>',
-                src: '**/*'
+                src: '<%= image_sources %>'
             }
         },
         mocha_phantomjs: {
@@ -151,12 +176,7 @@ module.exports = function (grunt) {
                 src: ['src/test/javascript/**/*.html']
             }
         },
-        apidoc: {
-            myapp: {
-                src: "app/",
-                dest: "apidoc/"
-            }
-        }
+        clean: [distDir]
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -165,11 +185,12 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-mocha');
     grunt.loadNpmTasks('grunt-mocha-phantomjs');
 
     grunt.registerTask('watchRadar', ['watch:radar']);
     grunt.registerTask('watchAll', ['watch:all']);
-    grunt.registerTask('dev', ['sass', 'jshint', 'concat', 'watch', 'copy']);
+    grunt.registerTask('dev', ['sass', 'jshint', 'concat', 'copy', 'watch:js']);
     grunt.registerTask('default', ['sass', 'jshint', 'mocha_phantomjs', 'concat', 'uglify', 'copy']);
 };
