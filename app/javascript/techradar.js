@@ -23,6 +23,9 @@
             //noinspection HtmlUnknownTarget
             var linkTemplate = _.template("<a target='_blank' href='${url}'>${title}</a>");
 
+            // true if any of the spots has more than 1 placements
+            var historyEnabled = _.findIndex(this.radar.spots, function(sp) { return _.size(sp.placements) > 1; }) !== -1;
+
             var extraSpacing = 20; //Extra spacing on the right for texts in tooltip
 
             var canvas = d3.select("#radar") //
@@ -258,7 +261,7 @@
             function createListElement(count, listId, spot) {
 
                 function isNewSpot(spot) {
-                    return _.size(spot.placements) <= 1;
+                    return historyEnabled && _.size(spot.placements) <= 1;
                 }
 
                 function createListEntry() {
@@ -342,11 +345,13 @@
                 function appendLinkBarTo(descriptionBox) {
                     var linkbar = descriptionBox.append('div').attr('class', 'linkbar');
 
+                    if (historyEnabled) {
                     linkbar.append('a')
                         .on('click', function () { toggleHistoryOf(spot); })
                         .attr('href', '#')
                         .text('History');
-                    
+                    }
+
                     if (spot.url) {
                         linkbar.append('a')
                             .attr('class', 'destination')
