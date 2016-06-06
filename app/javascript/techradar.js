@@ -365,6 +365,16 @@
             }
 
             function showDescriptionOf(spot) {
+                if(jQuery.isFunction(window.ga)){
+                    // Trigger Google Analytics event if GA is included in index.html
+                    ga('send', {
+                        hitType: 'event',
+                        eventCategory: 'Radar',
+                        eventAction: 'expand',
+                        eventLabel: spot.title
+                    });
+                }
+
                 $('.description').filter(function (index, element) {
                     var e = $(element);
                     if (e.css('display') !== 'none') {
