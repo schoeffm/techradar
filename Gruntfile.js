@@ -14,7 +14,6 @@ module.exports = function (grunt) {
         css_libs: [],
         view_libs: [
             'bower_components/jquery/dist/jquery.min.js',
-            'bower_components/jquery-color/jquery.color.js',
             'bower_components/d3/d3.min.js',
             'bower_components/lodash/lodash.min.js',
             'bower_components/underscore/underscore-min.js',
