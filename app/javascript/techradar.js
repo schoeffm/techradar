@@ -359,7 +359,7 @@
                             .attr('href', spot.url)
                             .text('Homepage');
                     }
-                    
+
                     return linkbar;
                 }
 
@@ -463,7 +463,7 @@
                 var yOffset = (spotExpandedSize / 2) + 9;
 
                 var toolTipText = toolTipGroup.select("text")
-                    .attr("x", selectedSpotCartesian2.x + xOffset) //
+                    .attr("x", selectedSpotCartesian2.x + xOffset)
                     .attr("y", selectedSpotCartesian2.y - yOffset)
                     .text(spot.title);
 
