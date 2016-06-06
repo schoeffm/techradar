@@ -200,8 +200,9 @@
                     })
                     .attr("r", 10)
                     .attr("class", function (d) {
-                        return ((hasSpotMoved(d)) ? "spot hasMoved" : "spot") + " " + quadrant.cssClass;
+                        return ((hasSpotMoved(d)) ? "spot hasMoved" : "spot");
                     })
+                    .style("fill", quadrant.spotColor)
                     .on('mouseover', function (d) {
                         highlightSpot(d);
                     })
@@ -258,6 +259,7 @@
             }
 
             function createListElement(count, listId, spot) {
+
                 function isNewSpot(spot) {
                     return _.size(spot.placements) <= 1;
                 }
@@ -455,7 +457,7 @@
 
                 toolTipGroup.select("rect")
                     .attr("width", toolTipText.node().getComputedTextLength() + 6)
-                    .attr("class", selectedSpot.attr("class"))
+                    .style("fill", selectedSpot.style("fill"))
                     .attr("x", selectedSpotCartesian2.x + xOffset - 3)
                     .attr("y", selectedSpotCartesian2.y - yOffset - 18);
 
@@ -536,7 +538,7 @@
             }
 
             function drawQuadrantArc(group, radius, arcIndex, quadrantIndex, quadrant) {
-                var cssClass = quadrant.cssClass || "none";
+                var background = quadrant.color || "none";
                 var start = quadrant.lowerAngle * (Math.PI / 180);
                 var end = quadrant.upperAngle * (Math.PI / 180);
                 var inner = radius * arcIndex;
@@ -557,7 +559,7 @@
                 group.append("path") //
                     .attr("id", quadrantIndex + "_" + arcIndex)
                     .attr("d", arc) //
-                    .attr("class", cssClass) //
+                    .attr("fill", background ) //
                     .attr("fill-opacity", 1 / (outer / 100)) //
                     .attr("stroke", "grey") //
                     .attr("stroke-opacity", 0.4) //

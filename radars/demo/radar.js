@@ -36,28 +36,33 @@ var radar = [
                 "title": "Techniques",
                 "upperAngle": 180,
                 "lowerAngle": 90,
-                "cssClass": "techniques"
+                "color": "#CCC18B",
+                "spotColor": "#8caa4c"
             },
             {
                 "id": 2,
                 "title": "Platforms",
                 "upperAngle": 270,
                 "lowerAngle": 180,
-                "cssClass": "platforms"
+                "color": "#EBB35F",
+                "spotColor": "#ea9b25"
+
             },
             {
                 "id": 3,
                 "title": "Tools",
                 "upperAngle": 90,
                 "lowerAngle": 0,
-                "cssClass": "tools"
+                "color": "#A8B4C3",
+                "spotColor": "#5183c1"
             },
             {
                 "id": 4,
                 "title": "Languages and Frameworks",
                 "upperAngle": 360,
                 "lowerAngle": 270,
-                "cssClass": "languages"
+                "color": "#CFBCC4",
+                "spotColor": "#ce84a3"
 
             }
         ],
