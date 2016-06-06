@@ -35,3 +35,18 @@ The project can host multiple radars. Just copy 'radars/demo' to 'radars/myradar
   - to access also the historic descriptions you'll have to click the _Histor_ link a the very bottom of the current description
     - that will uncover another text-block at the bottom of the page
 - Clickin' the __?__-sign at the lift upper corner will show a short description about what's the purpose of this radar and each ring etc.
+
+## Create your own radar
+
+The project can host multiple radars. To add and manage your own radar:
+
+1. Copy demo radar
+  * _cp -R radars/demo radars/myradar_
+2. Build myradar
+  * _grunt --radar=myradar_
+3. Open radars/myradar/index.html
+4. Add myradar to your private version control
+  * _cd radars/myradar_
+  * _git init && git add -A && git commit -m "Initial commit"_
+    
+With this layout and intelligent IDE i's easy to contribute back to this techradar project and manage your personal or company radar in a separate repository. Everything under radars/myradar will be pushed to your repository while rest of the files use different remote.
