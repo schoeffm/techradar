@@ -8,9 +8,6 @@
     exports.TechRadar = TechRadar;
 
     TechRadar.prototype = {
-        clickRadarItem: function (itemId) {
-            $('#' + itemId + '.itemText div.label').click();
-        },
         create: function () {
 
             /* these few configurations are the bare necessary stuff */

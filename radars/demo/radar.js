@@ -367,7 +367,7 @@ var radar = [
                     },
                     {
                         "id": 63,
-                        "description": "A groovy based BDD/DDD test-framework - although written in groovy you can also test your java project with this framework. It got almost everything you'll need like a decent DSL which let your write very expressive test code, mock- and stubbing-support without the need to add another library and remarkable precise error-messages in case of test failures.",
+                        "description": "A groovy based BDD/DDD test-framework - although written in groovy you can also test your java project with this framework. It got almost everything you'll need like a decent DSL which let your write very expressive test code, mock- and stubbing-support without the need to add another library and remarkable precise error-messages in case of test failures. See also <a href='#cucumber'>Cucumber</a>",
                         "since": 1441979123000,
                         "coordinates": {
                             "angle": 350,
@@ -417,7 +417,7 @@ var radar = [
                     },
                     {
                         "id": 65,
-                        "description": "As one of the most used BBD Frameworks, Cucumber supports several languages like Ruby, Java, .NET and Flex. One of the big values of Cucumber is the simplicity of writing acceptance tests. The test is written in a business-readable domain-specific language and serves both as automated tests and documentation.",
+                        "description": "As one of the most used BBD Frameworks, Cucumber supports several languages like Ruby, Java, .NET and Flex. One of the big values of Cucumber is the simplicity of writing acceptance tests. The test is written in a business-readable domain-specific language and serves both as automated tests and documentation. See also <a href='#spock'>Spock</a>",
                         "since": 1441979123000,
                         "coordinates": {
                             "angle": 355,

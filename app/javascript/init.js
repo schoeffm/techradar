@@ -1,15 +1,13 @@
 var de;
 if (! de) { de = {}; }
 if (! de.bender) { de.bender = {}; }
-if (! de.bender.radar ) { de.bender.radar = {}; }
 
-//
 // like on-document-ready but for confluence-pages
 $(document).ready(function () {
     de.bender.prepareSage();
-    radar = new TechRadar(_.first(radar));
-    radar.create();
-    de.bender.radar =radar;
+    new TechRadar(_.first(radar)).create();
+
+    $(window).on('hashchange', de.bender.handleUrlHash);
 });
 
 
@@ -32,13 +30,21 @@ de.bender.clearStage = function() {
     if ($('#history').length > 0) { $('#history').remove(); }
 };
 
+de.bender.handleUrlHash = function() {
+    var itemId =window.location.hash;
+    if(itemId) {
+        console.log(itemId);
+        $(itemId + '.itemText div.label').click();
+    }
+};
+
 de.bender.showRadar = function(indexOfRadarToBeShown) {
     de.bender.clearStage();
     de.bender.prepareSage();
-    
+
     document.title = de.bender.radars[indexOfRadarToBeShown].title;
     $('#title-text').text(de.bender.radars[indexOfRadarToBeShown].title);
-    radar = new TechRadar(de.bender.radars[indexOfRadarToBeShown]);
-    radar.create();
-    de.bender.radar =radar;
+
+    new TechRadar(de.bender.radars[indexOfRadarToBeShown]).create();
+    $(window).on('hashchange', de.bender.handleUrlHash);
 };
