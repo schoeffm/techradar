@@ -33,31 +33,37 @@ var radar = [
         "quadrants": [
             {
                 "id": 1,
-                "title": "Tools",
-                "upperAngle": 90,
-                "lowerAngle": 0,
-                "color": "#A8B4C3"
+                "title": "Techniques",
+                "upperAngle": 180,
+                "lowerAngle": 90,
+                "color": "#CCC18B",
+                "spotColor": "#8caa4c"
             },
             {
                 "id": 2,
                 "title": "Platforms",
                 "upperAngle": 270,
                 "lowerAngle": 180,
-                "color": "#EBB35F"
+                "color": "#EBB35F",
+                "spotColor": "#ea9b25"
+
             },
             {
                 "id": 3,
-                "title": "Languages and Frameworks",
-                "upperAngle": 360,
-                "lowerAngle": 270,
-                "color": "#CFBCC4"
+                "title": "Tools",
+                "upperAngle": 90,
+                "lowerAngle": 0,
+                "color": "#A8B4C3",
+                "spotColor": "#5183c1"
             },
             {
                 "id": 4,
-                "title": "Techniques",
-                "upperAngle": 180,
-                "lowerAngle": 90,
-                "color": "#CCC18B"
+                "title": "Languages and Frameworks",
+                "upperAngle": 360,
+                "lowerAngle": 270,
+                "color": "#CFBCC4",
+                "spotColor": "#ce84a3"
+
             }
         ],
         "spots": [
@@ -71,8 +77,8 @@ var radar = [
                         "description": "Yeoman helps to kickstart new projects, prescribing best practices and tools to help you stay productive. To do so, Yeoman provides a generator ecosystem. A generator is basically a plugin that can be run with the `yo` command to scaffold complete projects or useful parts. The offered workflow is a robust and opinionated client-side stack, comprising tools and frameworks that can help developers quickly build beautiful web applications. We take care of providing everything needed to get started without any of the normal headaches associated with a manual setup.",
                         "since": 1426464000000,
                         "coordinates": {
-                            "angle": 60,
-                            "radius": 200
+                            "angle": 90,
+                            "radius": 180
                         }
                     },
                     {
@@ -80,8 +86,8 @@ var radar = [
                         "description": "Yeoman helps to kickstart new projects, prescribing best practices and tools to help you stay productive. To do so, Yeoman provides a generator ecosystem. A generator is basically a plugin that can be run with the `yo` command to scaffold complete projects or useful parts. The offered workflow is a robust and opinionated client-side stack, comprising tools and frameworks that can help developers quickly build beautiful web applications. We take care of providing everything needed to get started without any of the normal headaches associated with a manual setup.",
                         "since": 1441978094000,
                         "coordinates": {
-                            "angle": 60,
-                            "radius": 200
+                            "angle": 0,
+                            "radius": 90
                         }
                     }
                 ]
@@ -240,7 +246,7 @@ var radar = [
                         "since": 1441978094000,
                         "coordinates": {
                             "angle": 20,
-                            "radius": 112
+                            "radius": 10
                         }
                     }
                 ]
@@ -361,7 +367,7 @@ var radar = [
                     },
                     {
                         "id": 63,
-                        "description": "A groovy based BDD/DDD test-framework - although written in groovy you can also test your java project with this framework. It got almost everything you'll need like a decent DSL which let your write very expressive test code, mock- and stubbing-support without the need to add another library and remarkable precise error-messages in case of test failures.",
+                        "description": "A groovy based BDD/DDD test-framework - although written in groovy you can also test your java project with this framework. It got almost everything you'll need like a decent DSL which let your write very expressive test code, mock- and stubbing-support without the need to add another library and remarkable precise error-messages in case of test failures. See also <a href='#cucumber'>Cucumber</a>",
                         "since": 1441979123000,
                         "coordinates": {
                             "angle": 350,
@@ -411,7 +417,7 @@ var radar = [
                     },
                     {
                         "id": 65,
-                        "description": "As one of the most used BBD Frameworks, Cucumber supports several languages like Ruby, Java, .NET and Flex. One of the big values of Cucumber is the simplicity of writing acceptance tests. The test is written in a business-readable domain-specific language and serves both as automated tests and documentation.",
+                        "description": "As one of the most used BBD Frameworks, Cucumber supports several languages like Ruby, Java, .NET and Flex. One of the big values of Cucumber is the simplicity of writing acceptance tests. The test is written in a business-readable domain-specific language and serves both as automated tests and documentation. See also <a href='#spock'>Spock</a>",
                         "since": 1441979123000,
                         "coordinates": {
                             "angle": 355,
@@ -704,4 +710,4 @@ var radar = [
             }
         ]
     }
-]
+];

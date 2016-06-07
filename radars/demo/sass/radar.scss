@@ -1,0 +1,14 @@
+$header_logo_path: '../images/schoeffm_avatar.png';
+
+#main-header {
+  margin: 0;
+  width: 100%;
+  background-color: #E4E8EC;
+}
+
+#logo {
+  width: 30px;
+  height: 30px;
+  margin-left: 10px;
+  background-image: url($header_logo_path);
+}

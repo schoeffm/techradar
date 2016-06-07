@@ -19,11 +19,13 @@ Since I've used this project also as playground for me I've tried a whole bunch 
     $~/techradar> bower install       # will fetch all necessary front-end dependencies
     $~/techradar> grunt               # will squish everything together
 
-Fire up your browser and open the `index.html`. You should see something like this:
+Fire up your browser and open the `radars/demo/index.html`. You should see something like this:
 
 ![TechRadar Sample](radar.png?raw=true)
 
-All the data is served by a static JSON-file `radars/dump.js`. The structure should be quite self explanatory - change it at will to see your technologies appearing in the radar.
+All the data is served by a static JSON-file `radars/demo/radar.js`. The structure should be quite self explanatory - change it at will to see your technologies appearing in the radar.
+
+The project can host multiple radars. Just copy 'radars/demo' to 'radars/myradar' to create new one. To build your new radar use 'grunt --radar=myradar'
 
 - Hovering over a spot will highlight it (_as demonstrated in the screenshot_)
   - still staying with your mouse over that spot it'll also show its historic way through the radar (if the spot contains a recognizable history - I've created three stops for the docker-spot in the example data)
@@ -33,3 +35,18 @@ All the data is served by a static JSON-file `radars/dump.js`. The structure sho
   - to access also the historic descriptions you'll have to click the _Histor_ link a the very bottom of the current description
     - that will uncover another text-block at the bottom of the page
 - Clickin' the __?__-sign at the lift upper corner will show a short description about what's the purpose of this radar and each ring etc.
+
+## Create your own radar
+
+The project can host multiple radars. To add and manage your own radar:
+
+1. Copy demo radar
+  * _cp -R radars/demo radars/myradar_
+2. Build myradar
+  * _grunt --radar=myradar_
+3. Open radars/myradar/index.html
+4. Add myradar to your private version control
+  * _cd radars/myradar_
+  * _git init && git add -A && git commit -m "Initial commit"_
+    
+With this layout and intelligent IDE i's easy to contribute back to this techradar project and manage your personal or company radar in a separate repository. Everything under radars/myradar will be pushed to your repository while rest of the files use different remote.

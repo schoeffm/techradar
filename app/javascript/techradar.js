@@ -1,15 +1,15 @@
-(function(exports) {
+(function (exports) {
     "use strict";
 
     function TechRadar(radar) {
         this.radar = radar || {};
     }
-    
+
     exports.TechRadar = TechRadar;
 
     TechRadar.prototype = {
         create: function () {
-            
+
             /* these few configurations are the bare necessary stuff */
             var radius = this.radar.arcDistanceInPixel;
             var offset = radius * 0.25;
@@ -20,11 +20,17 @@
             var height = (radius * _.size(this.radar.arcs)) * 2 + (offset * 2);
             var center = {x: width / 2, y: height / 2};
 
+            //noinspection HtmlUnknownTarget
             var linkTemplate = _.template("<a target='_blank' href='${url}'>${title}</a>");
+
+            // true if any of the spots has more than 1 placements
+            var historyEnabled = _.findIndex(this.radar.spots, function(sp) { return _.size(sp.placements) > 1; }) !== -1;
+
+            var extraSpacing = 20; //Extra spacing on the right for texts in tooltip
 
             var canvas = d3.select("#radar") //
                 .append('svg')              // add a svg-container in order to draw some shapes
-                .attr("width", (radius * _.size(this.radar.arcs)) * 2 + (offset * 2))
+                .attr("width", (radius * _.size(this.radar.arcs)) * 2 + (offset * 2)+extraSpacing)
                 .attr("height", (radius * _.size(this.radar.arcs)) * 2 + (offset * 2));
 
             var group = canvas.append("g").attr("transform", "translate(" + center.x + "," + center.y + ")");
@@ -41,9 +47,11 @@
                 // 1.) create all arcs for this quadrant
                 this.radar.arcs
                     .sort(sortByArcOrder)
-                    .forEach(function(element, arcIndex) { drawQuadrantArc(group, radius, arcIndex, quadrantIndex, quadrant); });
-                
-                drawQuadrantLegend(group, quadrant, quadrantIndex, (this.radar.arcs.length-1), radius);
+                    .forEach(function (element, arcIndex) {
+                        drawQuadrantArc(group, radius, arcIndex, quadrantIndex, quadrant);
+                    });
+
+                drawQuadrantLegend(group, quadrant, quadrantIndex, (this.radar.arcs.length - 1), radius);
 
                 var items = findItemsOf(this.radar.spots, quadrant);
                 var enterElement = canvas.selectAll('bogus')// join with sth. non-existent
@@ -55,7 +63,7 @@
                     });
 
                 // creates all spots
-                createRadarSpots(enterElement);
+                createRadarSpots(enterElement, quadrant);
 
                 // write a head-line per quadrant
                 createListHeadline(quadrant, (quadrantIndex < 2) ? 0 : 1);
@@ -63,68 +71,123 @@
             }, this);
 
             renderHelp(canvas, this.radar);
-            
-            function sortByArcOrder(a,b) {
+            renderTooltip(canvas);
+
+            function sortByArcOrder(a, b) {
                 return a.order - b.order;
             }
-            
+
             function findItemsOf(spots, quadrant) {
-                return _.filter(spots, function(spot) {
+                return _.filter(spots, function (spot) {
                     var spotAngle = currentPlacementOf(spot).coordinates.angle;
                     return quadrant.lowerAngle <= spotAngle && spotAngle < quadrant.upperAngle;
                 });
             }
-            
+
+            //Renders element that is used as tooltip container
+            function renderTooltip(tooltipCanvas) {
+                var tooltipGroup = tooltipCanvas.append("g")
+                    .attr("id", "spotTooltip")
+                    .attr("transform", function () {
+                        return "translate(" + center.x + "," + center.y + ")";
+                    })
+                    .style("visibility","hidden");
+
+                tooltipGroup.append("rect")
+                    .attr("rx", 5)
+                    .attr("ry", 5)
+                    .attr("height", 25)
+                    .attr("stroke-width", 3)
+                    //Following will be set when showing
+                    .attr("width", 0)
+                    .attr("x", 0)
+                    .attr("y", 0);
+
+                tooltipGroup.append("text")
+                    .attr("class", "spotTooltip");
+            }
+
             function renderHelp(helpCanvas, radar) {
                 var animationSpeed = 200,
                     iconRadius = 13,
                     xPosition = 18, yPosition = 18;
-                
+
                 function lowlightHelp() {
                     helpCanvas.selectAll('text.helpLabel').remove();
                     d3.select('.helpIcon').transition().ease('cubic-out').duration(animationSpeed).attr("r", iconRadius);
                 }
-                
+
                 function highlightHelp() {
-                    helpCanvas.append('text').attr({'class':'helpLabel', 'dx': xPosition * 2, 'dy': xPosition + 5}).text('Help');
+                    helpCanvas.append('text').attr({
+                        'class': 'helpLabel',
+                        'dx': xPosition * 2,
+                        'dy': xPosition + 5
+                    }).text('Help');
                     d3.select('.helpIcon').transition().ease('cubic-out').duration(animationSpeed).attr("r", iconRadius + 2);
                 }
+
                 function toggleHelp() {
                     $('#help').modal({
-                        opacity:60, autoResize: true, overlayClose: true, overlayCss: {backgroundColor:"#fff" },
+                        opacity: 60, autoResize: true, overlayClose: true, overlayCss: {backgroundColor: "#fff"},
                         onOpen: function (dialog) {
                             dialog.overlay.fadeIn();
                             dialog.data.fadeIn();
                             dialog.container.fadeIn();
-                }   }); }
+                        }
+                    });
+                }
 
                 // render the help-text
                 var helpDiv = d3.select('#help').append('div');
                 helpDiv.append('h2').html(radar.title);
                 helpDiv.append('div').html(radar.description);
-                _.forEach(radar.arcs, function(arc) {
+                _.forEach(radar.arcs, function (arc) {
                     helpDiv.append('h3').html(arc.title);
                     helpDiv.append('div').html(arc.description);
                 });
-                
+
                 helpCanvas.append("circle")
                     .attr({'class': 'helpIcon', "cx": xPosition, "cy": yPosition, "r": iconRadius})
-                    .on('mouseout', function () { lowlightHelp(); })
-                    .on('mouseover', function () { highlightHelp(); })
-                    .on('click', function() { toggleHelp(); });
+                    .on('mouseout', function () {
+                        lowlightHelp();
+                    })
+                    .on('mouseover', function () {
+                        highlightHelp();
+                    })
+                    .on('click', function () {
+                        toggleHelp();
+                    });
 
                 helpCanvas.append('text')
-                    .attr({'class':'helpIcon', 'dx': yPosition - 2, 'dy': xPosition + 5})
+                    .attr({'class': 'helpIcon', 'dx': yPosition - 4, 'dy': xPosition + 5})
                     .text('?')
-                    .style({'stroke': 'black', 'font-weight': 100 })
-                    .on('mouseout', function () { lowlightHelp(); })
-                    .on('mouseover', function () { highlightHelp(); })
-                    .on('click', function() { toggleHelp(); });
+                    .style({'stroke': 'black', 'font-weight': 100})
+                    .on('mouseout', function () {
+                        lowlightHelp();
+                    })
+                    .on('mouseover', function () {
+                        highlightHelp();
+                    })
+                    .on('click', function () {
+                        toggleHelp();
+                    });
             }
-            
-            function createRadarSpots(enterElement) {
+
+            function getPlacementDescription(spot, placement) {
+                var placementDescription = placement.description;
+                if (spot.url) {
+                    placementDescription = placement.description
+                        .replace(spot.title, linkTemplate({'url': spot.url, 'title': spot.title}));
+                }
+                return placementDescription;
+            }
+
+            function createRadarSpots(enterElement, quadrant) {
+
                 enterElement.append("circle")
-                    .attr("id", function (d) { return asId(d.title); })
+                    .attr("id", function (d) {
+                        return asId(d.title);
+                    })
                     .attr("cx", function (d) {
                         return polar_to_cartesian2(
                             currentPlacementOf(d).coordinates.radius,
@@ -137,8 +200,9 @@
                     })
                     .attr("r", 10)
                     .attr("class", function (d) {
-                        return (hasSpotMoved(d)) ? "spot hasMoved" : "spot";
+                        return ((hasSpotMoved(d)) ? "spot hasMoved" : "spot");
                     })
+                    .style("fill", quadrant.spotColor)
                     .on('mouseover', function (d) {
                         highlightSpot(d);
                     })
@@ -195,8 +259,9 @@
             }
 
             function createListElement(count, listId, spot) {
+
                 function isNewSpot(spot) {
-                    return _.size(spot.placements) <= 1;
+                    return historyEnabled && _.size(spot.placements) <= 1;
                 }
 
                 function createListEntry() {
@@ -253,13 +318,13 @@
                     // for every placement create a dedicated container
                     _.forEach(orderedHistoryOfPlacementsFor(spot), function (placement) {
                         var since = new Date(placement.since);
+
                         historyBox.append('div')
                             .attr('class', 'date')
-                            .text(since.toLocaleString('de-DE', {year: 'numeric', month: 'long'}));
+                            .text(since.toLocaleString('en-US', {year: 'numeric', month: 'long'}));
                         historyBox.append('div')
                             .attr('class', 'text')
-                            .html(placement.description
-                                .replace(spot.title, linkTemplate({'url': spot.url, 'title': spot.title})));
+                            .html(getPlacementDescription(spot, placement));
                     });
 
                     return historyBox;
@@ -272,8 +337,7 @@
 
                     // var linkTemplate = _.template("<a target='_blank' href='${url}'>${title}</a>");
                     descriptionBox.append('div')
-                        .html(currentPlacementOf(spot)
-                            .description.replace(spot.title, linkTemplate({'url': spot.url, 'title': spot.title})));
+                        .html(getPlacementDescription(spot, currentPlacementOf(spot)));
 
                     return descriptionBox;
                 }
@@ -281,11 +345,13 @@
                 function appendLinkBarTo(descriptionBox) {
                     var linkbar = descriptionBox.append('div').attr('class', 'linkbar');
 
+                    if (historyEnabled) {
                     linkbar.append('a')
                         .on('click', function () { toggleHistoryOf(spot); })
                         .attr('href', '#')
                         .text('History');
-                    
+                    }
+
                     if (spot.url) {
                         linkbar.append('a')
                             .attr('class', 'destination')
@@ -293,7 +359,7 @@
                             .attr('href', spot.url)
                             .text('Homepage');
                     }
-                    
+
                     return linkbar;
                 }
 
@@ -304,6 +370,16 @@
             }
 
             function showDescriptionOf(spot) {
+                if(jQuery.isFunction(window.ga)){
+                    // Trigger Google Analytics event if GA is included in index.html
+                    ga('send', {
+                        hitType: 'event',
+                        eventCategory: 'Radar',
+                        eventAction: 'expand',
+                        eventLabel: spot.title
+                    });
+                }
+
                 $('.description').filter(function (index, element) {
                     var e = $(element);
                     if (e.css('display') !== 'none') {
@@ -347,6 +423,9 @@
                     .attr("stroke-width", 1)
                     .attr("r", 10);
 
+                //remove tooltip
+                d3.select("#spotTooltip").style("visibility","hidden");
+
                 d3.selectAll(".label")
                     .style('color', 'black')
                     .style("font-weight", "100")
@@ -357,24 +436,46 @@
 
             function highlightSpot(spot) {
                 var animationSpeed = '200';
+                var spotExpandedSize = 18;
 
                 // fade out all spots ...
                 d3.selectAll("circle.spot")
                     .attr('fill-opacity', 0.4)
                     .attr("stroke-opacity", 0.4);
 
+                var selectedSpot = d3.select("circle#" + asId(spot.title));
                 // ... except for our selection-candidate
-                d3.select("circle#" + asId(spot.title))
-                    .attr('fill-opacity', 1)
+                selectedSpot.attr('fill-opacity', 1)
                     .attr("stroke-opacity", 1);
 
                 // ... make our selection-candidate even bigger and animate that
-                d3.select("circle#" + asId(spot.title))
-                    .transition().ease('cubic-out').duration(animationSpeed)
+                selectedSpot.transition().ease('cubic-out').duration(animationSpeed)
                     .attr("stroke-width", 3)
-                    .attr("r", 18);
+                    .attr("r", spotExpandedSize);
 
-                // ... fade out all list-entries 
+
+                var toolTipGroup = d3.select("#spotTooltip");
+
+                var coordinatesOfSelectedSpot = currentPlacementOf(spot).coordinates;
+                var selectedSpotCartesian2 = polar_to_cartesian2(coordinatesOfSelectedSpot.radius, coordinatesOfSelectedSpot.angle);
+
+                var xOffset = (spotExpandedSize / 2) + 9;
+                var yOffset = (spotExpandedSize / 2) + 9;
+
+                var toolTipText = toolTipGroup.select("text")
+                    .attr("x", selectedSpotCartesian2.x + xOffset)
+                    .attr("y", selectedSpotCartesian2.y - yOffset)
+                    .text(spot.title);
+
+                toolTipGroup.select("rect")
+                    .attr("width", toolTipText.node().getComputedTextLength() + 6)
+                    .style("fill", selectedSpot.style("fill"))
+                    .attr("x", selectedSpotCartesian2.x + xOffset - 3)
+                    .attr("y", selectedSpotCartesian2.y - yOffset - 18);
+
+                toolTipGroup.style("visibility", "visible");
+
+                // ... fade out all list-entries
                 d3.selectAll("#items0 .label, #items1 .label").style('color', 'lightgrey');
 
                 // except the corresponding list-entry (which should also be highlighted)
@@ -382,62 +483,68 @@
                     .style('font-weight', 'bold')
                     .style('color', 'white')
                     .style("background-color", "#6B8E23");
-                
+
                 showHistoricSpots(spot);
             }
-            
-            function clearHistoricSpots(){
+
+            function clearHistoricSpots() {
                 // ... remove all spots and lines
                 d3.selectAll(".historySpot").remove();
                 d3.selectAll(".historyLine").remove();
 
                 // ... and don't forget the animation-interval to clear
                 clearInterval(historyAnimation);
-            } 
-            
+            }
+
             function showHistoricSpots(spot) {
                 var ordered = orderedHistoryOfPlacementsFor(spot);
-                
+
                 // determine placements that actually represent a movement big enough to be painted
-                var placements = _.filter(ordered, function(placement) {
+                var placements = _.filter(ordered, function (placement) {
                     return distanceBetweenPlacements(currentPlacementOf(spot), placement) > 18;
                 });
-                
+
                 // ... append those placements to the canvas but don't fill their color
                 canvas.selectAll('bogus') // join with sth. non-existent
                     .data(placements).enter()
                     .append("g")
-                        .attr("transform", function () { return "translate(" + center.x + "," + center.y + ")"; })
+                    .attr("transform", function () {
+                        return "translate(" + center.x + "," + center.y + ")";
+                    })
                     .append("circle")
-                        .attr("cx", function (p) { return polar_to_cartesian2(radiusOf(p), angleOf(p)).x; })
-                        .attr("cy", function (p) { return polar_to_cartesian2(radiusOf(p), angleOf(p)).y; })
-                        .attr("r", 10)
-                        .attr('fill-opacity', 0)
-                        .attr('stroke-opacity', 0)
-                        .attr("class", "spot historySpot");
+                    .attr("cx", function (p) {
+                        return polar_to_cartesian2(radiusOf(p), angleOf(p)).x;
+                    })
+                    .attr("cy", function (p) {
+                        return polar_to_cartesian2(radiusOf(p), angleOf(p)).y;
+                    })
+                    .attr("r", 10)
+                    .attr('fill-opacity', 0)
+                    .attr('stroke-opacity', 0)
+                    .attr("class", "spot historySpot");
 
                 // create array with the first/current spot and the history spots to draw the lines 
                 var foo = [ordered[0]].concat(placements);
-                                
+
                 // ... now peau a peau fill the spot-color to have a nice animation
                 var i = 0;
-                historyAnimation = setInterval(function() {
-                    if ((i+1) >= foo.length) {
+                historyAnimation = setInterval(function () {
+                    if ((i + 1) >= foo.length) {
                         clearInterval(historyAnimation);
                     }
                     else {
-	                    var from = polar_to_cartesian2(radiusOf(foo[i]), angleOf(foo[i]));
-	                    var to = polar_to_cartesian2(radiusOf(foo[i+1]), angleOf(foo[i+1]));
-	                    i++;
-	                    
-	                    drawline(canvas, 
-	                        {x: from.x + center.x, y: from.y + center.y}, 
-	                        {x: to.x + center.x, y: to.y + center.y}, 
-	                        "historyLine");
-	                    
-	                    d3.select('.historySpot[fill-opacity="0"]')
-	                        .transition().ease('cubic-out').duration(500)
-	                        .attr('fill-opacity', 0.8);
+                        var from = polar_to_cartesian2(radiusOf(foo[i]), angleOf(foo[i]));
+                        var to = polar_to_cartesian2(radiusOf(foo[i + 1]), angleOf(foo[i + 1]));
+                        i++;
+
+                        drawline(canvas,
+                            {x: from.x + center.x, y: from.y + center.y},
+                            {x: to.x + center.x, y: to.y + center.y},
+                            "historyLine");
+
+                        d3.select('.historySpot[fill-opacity="0"]')
+                            .transition().ease('cubic-out').duration(500)
+                            .attr('fill-opacity', 0.8);
                     }
                 }, 750);
             }
@@ -464,7 +571,7 @@
                 group.append("path") //
                     .attr("id", quadrantIndex + "_" + arcIndex)
                     .attr("d", arc) //
-                    .attr("fill", background) //
+                    .attr("fill", background ) //
                     .attr("fill-opacity", 1 / (outer / 100)) //
                     .attr("stroke", "grey") //
                     .attr("stroke-opacity", 0.4) //
@@ -476,7 +583,7 @@
                 var text = group.append('text')
                     .attr("class", "quadrantLegend")
                     .attr("dy", +20) //
-                    .attr("dx", transpile*(maxArcIndex * arcDistanceInPixel));
+                    .attr("dx", transpile * (maxArcIndex * arcDistanceInPixel));
 
                 text.append("textPath")
                     .text(quadrant.title)
@@ -507,6 +614,7 @@
                     .attr("stroke-width", 1);
             }
 
+
             function hasSpotMoved(spot) {
                 var result = false;
                 if (_.size(spot.placements) > 1) {
@@ -527,11 +635,11 @@
             function distanceBetweenPlacements(placementOne, placementTwo) {
                 var pointOne = polar_to_cartesian2(placementOne.coordinates.radius, placementOne.coordinates.angle);
                 var pointTwo = polar_to_cartesian2(placementTwo.coordinates.radius, placementTwo.coordinates.angle);
-                
+
                 var deltaX = Math.abs(pointOne.x - pointTwo.x);
                 var deltaY = Math.abs(pointOne.y - pointTwo.y);
-                
-                return Math.sqrt( Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+
+                return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
             }
 
             function polar_to_cartesian2(r, t) {
@@ -544,11 +652,11 @@
             function radiusOf(placement) {
                 return placement.coordinates.radius;
             }
-            
+
             function angleOf(placement) {
                 return placement.coordinates.angle;
             }
-            
+
             function not(booleanValue) {
                 return !booleanValue;
             }
