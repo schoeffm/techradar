@@ -259,11 +259,6 @@
             }
 
             function createListElement(count, listId, spot) {
-
-                function isNewSpot(spot) {
-                    return historyEnabled && _.size(spot.placements) <= 1;
-                }
-
                 function createListEntry() {
                     var li = d3.select("ul#" + asId(listId))
                         .append("li")
@@ -281,11 +276,6 @@
                         .on('click', function () {
                             showDescriptionOf(spot);
                         });
-                    if (isNewSpot(spot)) {
-                        listElement.append('span')
-                            .attr('class', 'batch')
-                            .text('new');
-                    }
                     return li;
                 }
 
@@ -388,6 +378,7 @@
                 });
 
                 var toBeExpanded = $('li#' + asId(spot.title) + ' .description');
+
                 if (toBeExpanded.css('display') === 'none') {
                     toBeExpanded.slideDown(200, 'swing');
                 }
@@ -465,7 +456,7 @@
                 var toolTipText = toolTipGroup.select("text")
                     .attr("x", selectedSpotCartesian2.x + xOffset)
                     .attr("y", selectedSpotCartesian2.y - yOffset)
-                    .text(spot.title);
+                    .text(spot.title + ' (' + spot.placements[0].popularity + ')');
 
                 toolTipGroup.select("rect")
                     .attr("width", toolTipText.node().getComputedTextLength() + 6)
@@ -497,10 +488,10 @@
             }
 
             function showHistoricSpots(spot) {
-                var ordered = orderedHistoryOfPlacementsFor(spot);
+                //var ordered = orderedHistoryOfPlacementsFor(spot);
 
                 // determine placements that actually represent a movement big enough to be painted
-                var placements = _.filter(ordered, function (placement) {
+                var placements = _.filter(spot.placements, function (placement) {
                     return distanceBetweenPlacements(currentPlacementOf(spot), placement) > 18;
                 });
 
@@ -524,7 +515,7 @@
                     .attr("class", "spot historySpot");
 
                 // create array with the first/current spot and the history spots to draw the lines 
-                var foo = [ordered[0]].concat(placements);
+                var foo = [spot.placements[0]].concat(placements);
 
                 // ... now peau a peau fill the spot-color to have a nice animation
                 var i = 0;
@@ -533,20 +524,12 @@
                         clearInterval(historyAnimation);
                     }
                     else {
-                        var from = polar_to_cartesian2(radiusOf(foo[i]), angleOf(foo[i]));
-                        var to = polar_to_cartesian2(radiusOf(foo[i + 1]), angleOf(foo[i + 1]));
                         i++;
-
-                        drawline(canvas,
-                            {x: from.x + center.x, y: from.y + center.y},
-                            {x: to.x + center.x, y: to.y + center.y},
-                            "historyLine");
-
                         d3.select('.historySpot[fill-opacity="0"]')
                             .transition().ease('cubic-out').duration(500)
                             .attr('fill-opacity', 0.8);
                     }
-                }, 750);
+                }, 150);
             }
 
             function drawQuadrantArc(group, radius, arcIndex, quadrantIndex, quadrant) {
